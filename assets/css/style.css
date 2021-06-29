@@ -1,0 +1,14 @@
+body{
+    font-family: Arial;
+}
+
+header{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+header div, header p{
+    flex: 1 0 30%;
+}
+
