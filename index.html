@@ -28,12 +28,18 @@
     </header>
 
     <main>
-        <form>
-            <button>Take the quiz!</button>
-            <div class="quiz-content">
+        <form id="quizblock">
+            <button class="start">Take the quiz!</button>
+            <div class="quizcontent">
+                <p>When you start, you have 60 seconds to answer a series of questions. Each wrong answer will cost you 5 seconds from the timer.</p>
+
+                <p>When all questions are answered or the time runs out, the quiz is over, and your score (time remaining and questions correct) will be tallied. When you are ready, press the button above!</p>
+
                 <p>If this is a question, then what is the answer?</p>
+                
+
                 <label for="radio1">
-                    <input type="radio" name="question1" id="val1" value="val1">
+                    <input type="radio" name="question1" id="radio1" value="val1">
                     Answer 1
                 </label>
                 

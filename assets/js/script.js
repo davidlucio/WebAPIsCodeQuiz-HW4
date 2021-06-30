@@ -1,5 +1,3 @@
-console.log("Initialized");
-
 let possibleQuestions = {
     0: {
         "question"  : "Which of these css selectors would call the class?",
@@ -103,3 +101,98 @@ let possibleQuestions = {
     },
 
 }
+
+let highScores = localStorage.getItem("bootcamp-quiz-scores");
+let quizForm = document.getElementById("quizblock");
+let theButton = quizForm.querySelector("button");
+let timerWindow = document.getElementById("countdown");
+let quizTimer = 60;
+let globalTimer;
+
+
+// Grab control of the button and form
+theButton.addEventListener("click", function(event){
+    event.preventDefault();
+
+    if( theButton.classList.contains("start") ){
+
+        // Disable the button first
+        theButton.disabled = true;
+
+        // START THE QUIZ!
+
+    }
+    else{
+        // Reenable the button
+        theButton.disabled = false;
+        
+        // Cancel the quiz
+    }
+
+    console.log("Button pushed!");
+
+  });
+
+
+// LUCIOWARE - Timer Completed
+function clockManager(control){
+
+    var timeRemaining = quizTimer;
+    var theNumbers = timerWindow.querySelector("span");
+
+    if(control == "reset"){
+        // Reset the clock on page load
+        theNumbers.textContent = timeRemaining;
+    }
+    else if(control == "start"){
+        timerWindow.classList.add("active");
+
+        globalTimer = setInterval(function(){
+            timeRemaining--;
+            theNumbers.textContent = timeRemaining;
+
+            if(timeRemaining <= 10 && timeRemaining > 0){
+                if( !timerWindow.classList.contains("alert") ){
+                    timerWindow.classList.add("alert");
+                }
+            }
+            if(timeRemaining === 0){
+                clockManager("stop");
+                // endQuiz();
+            }
+        }, 1000);
+    }
+    else if(control == "stop"){
+        clearInterval(globalTimer);
+        theNumbers.textContent = timeRemaining;
+        timerWindow.classList.remove("active");
+        timerWindow.classList.remove("alert");
+    }
+
+}
+
+// // Make a question propogator
+// function quizHandler(){
+//     var questionBucket = possibleQuestions;
+
+//     while(questionBucket.length > 0){
+//         console.log( questionBucket[0] );
+//     }
+
+// }
+
+// Make an answer validator
+
+// STOP THE QUIZ! Tally the score...
+
+// THE BIG ONE!
+function initialize(){
+
+    console.log("Initialized");
+    clockManager("reset");
+    //displayScore();
+
+}
+
+// [Shania Voice] LET'S GO, GIRLS!
+initialize();

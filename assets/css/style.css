@@ -85,11 +85,18 @@ main form button{
     margin:0px auto 15px auto;
     padding: 5px;
     border-radius: 5px;
-    background: red;
     color: white;
     font-size: 16px;
     font-weight: 600;
     text-transform:uppercase;
+}
+
+main form button.start{
+    background: green;
+}
+
+main foirm button.stop{
+    background: red;
 }
 
 main form button:hover,
