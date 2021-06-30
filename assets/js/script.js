@@ -108,7 +108,7 @@ let currentScore = {
     "timeleft"  : 0
 };
 
-let highScores = localStorage.getItem("bootcamp-quiz-scores");
+let highScores = JSON.parse( localStorage.getItem("bootcamp-quiz-scores") );
 let quizForm = document.getElementById("quizblock");
 let theButton = quizForm.querySelector("button");
 let timerWindow = document.getElementById("countdown");
@@ -243,19 +243,19 @@ function evaluateScores(){
     console.log("TODO: Populate scoreboard");
     var storeBoard = {
         1 : {
-            "player"    : ""
+            "player"    : "???",
             "wrong"     : 0,
             "correct"   : 0,
             "timeleft"  : 0
         },
         2 : {
-            "player"    : ""
+            "player"    : "???",
             "wrong"     : 0,
             "correct"   : 0,
             "timeleft"  : 0
         },
         3 : {
-            "player"    : ""
+            "player"    : "???",
             "wrong"     : 0,
             "correct"   : 0,
             "timeleft"  : 0
@@ -263,12 +263,43 @@ function evaluateScores(){
     }
 
     if( highScores != null && highScores != undefined ){
-        
-        for(i=)
+        var backfill = 0;
+        for(i=1; 1 <= 3 && backfill == 0; i++ ){
+            if( currentScore.correct > highScores[i].correct){
+                storeBoard[i].player    = "???";
+                storeBoard[i].wrong     = currentScore.wrong;
+                storeBoard[i].correct   = currentScore.correct;
+                storeBoard[i].timeleft  = currentScore.timeleft;
+                backfill = i;
+            }
+            else if( currentScore.correct == highScores[i].correct && currentScore.timeleft > highScores[i].timeleft ){
+                storeBoard[i].player    = "???";
+                storeBoard[i].wrong     = currentScore.wrong;
+                storeBoard[i].correct   = currentScore.correct;
+                storeBoard[i].timeleft  = currentScore.timeleft;
+                backfill = i;
+            }
+            else{
+                storeBoard[i].player    = highScores[i].name;
+                storeBoard[i].wrong     = highScores[i].wrong;
+                storeBoard[i].correct   = highScores[i].correct;
+                storeBoard[i].timeleft  = highScores[i].timeleft;
+            }
+        }
 
+        if(backfill > 0){
+            for(j=backfill; j <= 2; j++){
+                storeBoard[j+1].player    = highScores[j].name;
+                storeBoard[j+1].wrong     = highScores[j].wrong;
+                storeBoard[j+1].correct   = highScores[j].correct;
+                storeBoard[j+1].timeleft  = highScores[j].timeleft;
+            }
+        }
+
+        localStorage.setItem("bootcamp-quiz-scores", JSON.stringify(storeBoard) );
+        
     }
 
-    // highScores = localStorage.getItem("bootcamp-quiz-scores");
 }
 
 
