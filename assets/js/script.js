@@ -103,14 +103,15 @@ let possibleQuestions = {
 }
 
 let currentScore = {
+    "player"    : "",
     "wrong"     : 0,
     "correct"   : 0,
     "timeleft"  : 0
 };
 
-let highScores = JSON.parse( localStorage.getItem("bootcamp-quiz-scores") );
 let quizForm = document.getElementById("quizblock");
 let theButton = quizForm.querySelector("button");
+let initialsField = quizForm.querySelector("#initials");
 let timerWindow = document.getElementById("countdown");
 let activeScore = document.getElementById("currentscore");
 let timeRemaining = 60;
@@ -121,13 +122,20 @@ let globalTimer;
 theButton.addEventListener("click", function(event){
     event.preventDefault();
 
-    theButton.style.display = "none";
-    currentScore = {
-        "wrong"     : 0,
-        "correct"   : 0,
-        "timeleft"  : 0
+    currentScore.wrong      = 0;
+    currentScore.correct    = 0;
+    currentScore.timeleft   = 0;
+
+    if(initialsField.value != ""){
+        currentScore.player = initialsField.value;
+        console.log(`Player ${currentScore.player} has started playing`)
+    }
+    else{
+        currentScore.player = "";
     }
 
+    theButton.style.display = "none";
+    initialsField.style.display = "none";
 
     quizHandler(0);
     clockManager("start");
@@ -144,6 +152,7 @@ function clockManager(control){
         // Reset the clock on page load
         theNumbers.textContent = timeRemaining;
         theButton.style.display = "block";
+        initialsField.style.display = "block";
     }
     else if(control == "start"){
         timerWindow.classList.add("active");
@@ -169,6 +178,7 @@ function clockManager(control){
         timerWindow.classList.remove("active");
         timerWindow.classList.remove("alert");
         theButton.style.display = "block";
+        initialsField.style.display = "block";
     }
 
 }
@@ -239,66 +249,83 @@ function answerValidation(questionNumber){
 
 
 // Checking scores!
-function evaluateScores(){
-    console.log("TODO: Populate scoreboard");
+function evaluateScores(initcall){
+
+    var highScores = JSON.parse( localStorage.getItem("bootcamp-quiz-scores") );
+
     var storeBoard = {
+        0 : {
+            "player"    : "",
+            "wrong"     : 0,
+            "correct"   : 0,
+            "timeleft"  : 0
+        },
         1 : {
-            "player"    : "???",
+            "player"    : "",
             "wrong"     : 0,
             "correct"   : 0,
             "timeleft"  : 0
         },
         2 : {
-            "player"    : "???",
-            "wrong"     : 0,
-            "correct"   : 0,
-            "timeleft"  : 0
-        },
-        3 : {
-            "player"    : "???",
+            "player"    : "",
             "wrong"     : 0,
             "correct"   : 0,
             "timeleft"  : 0
         },
     }
 
-    if( highScores != null && highScores != undefined ){
-        var backfill = 0;
-        for(i=1; 1 <= 3 && backfill == 0; i++ ){
-            if( currentScore.correct > highScores[i].correct){
-                storeBoard[i].player    = "???";
+
+    // Checking for a third entry... it's sloppy, but it should work.
+    if( highScores[2] != null && currentScore.player != ""){
+        var backfill = -1;
+
+        for(i=0; ( i < 3 ) && ( backfill < 0 ) ; i++ ){
+            
+            if( currentScore.correct > highScores[i].correct ){
+                // The player has taken over this spot due to points
+                storeBoard[i].player    = currentScore.player;
                 storeBoard[i].wrong     = currentScore.wrong;
                 storeBoard[i].correct   = currentScore.correct;
                 storeBoard[i].timeleft  = currentScore.timeleft;
+                // Using this to move the next spot of the bracket
                 backfill = i;
             }
             else if( currentScore.correct == highScores[i].correct && currentScore.timeleft > highScores[i].timeleft ){
-                storeBoard[i].player    = "???";
+                // The player has tied in points, and taken over by time left
+                storeBoard[i].player    = currentScore.player;
                 storeBoard[i].wrong     = currentScore.wrong;
                 storeBoard[i].correct   = currentScore.correct;
                 storeBoard[i].timeleft  = currentScore.timeleft;
+                // Using this to move the next spot of the bracket
                 backfill = i;
             }
             else{
-                storeBoard[i].player    = highScores[i].name;
+                // This spot remains unchanged
+                storeBoard[i].player    = highScores[i].player;
                 storeBoard[i].wrong     = highScores[i].wrong;
                 storeBoard[i].correct   = highScores[i].correct;
                 storeBoard[i].timeleft  = highScores[i].timeleft;
             }
         }
 
-        if(backfill > 0){
-            for(j=backfill; j <= 2; j++){
-                storeBoard[j+1].player    = highScores[j].name;
-                storeBoard[j+1].wrong     = highScores[j].wrong;
-                storeBoard[j+1].correct   = highScores[j].correct;
-                storeBoard[j+1].timeleft  = highScores[j].timeleft;
+        console.log(`Backfill: ${backfill}`);
+
+        if(backfill >=0 && backfill < 3){
+            for(i=backfill; i < 2; i++){
+                storeBoard[i+1].player    = highScores[i].player;
+                storeBoard[i+1].wrong     = highScores[i].wrong;
+                storeBoard[i+1].correct   = highScores[i].correct;
+                storeBoard[i+1].timeleft  = highScores[i].timeleft;
             }
         }
 
+        // Only submit if there are changes...
         localStorage.setItem("bootcamp-quiz-scores", JSON.stringify(storeBoard) );
-        
     }
+
+    // MORE STUFF!
+    console.log(highScores);
+    
 
 }
 
@@ -311,11 +338,11 @@ function endOfQuiz(finishtype){
     questionArea.textContent = "";
     theButton.style.display = "block";
     theButton.textContent = "Try again?"
+    initialsField.style.display = "block";
     timerWindow.classList.remove("alert");
 
     var finishMessage = document.createElement("h2");
     var contentMessage = document.createElement("h3");
-    var nameSpace = document.createElement("input"); // TODO!
 
     if(finishtype == "timelimit"){
         finishMessage.textContent = "Time's up!";
@@ -327,18 +354,20 @@ function endOfQuiz(finishtype){
         finishMessage.textContent = "All questions completed!";
         questionArea.appendChild(finishMessage);
     }
-    contentMessage.textContent = "You can check your score, your remaining time, and the best scorers at the top! And you can always try again.";
+
+    // Submit the scores, and possibly update the leaderboard
+    evaluateScores(false);
+
+    contentMessage.textContent = "You can check your score and your remaining time at the top. Insert your initials below. If you scored high enough, you might make it on the leaderboard! And if nothing else, you can always try again.";
     questionArea.appendChild(contentMessage);
-
-    evaluateScores();
-
+    
 }
 
 
 // [Shania Voice] LET'S GO, GIRLS!
 function initialize(){
     clockManager("reset");
-    evaluateScores();
+    evaluateScores(true);
 }
 
 initialize();

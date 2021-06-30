@@ -82,21 +82,14 @@ main form{
 
 main form button{
     display: block;
-    margin:0px auto 30px auto;
+    margin:0px auto 15px auto;
     padding: 5px;
     border-radius: 5px;
     color: white;
     font-size: 16px;
     font-weight: 600;
     text-transform:uppercase;
-}
-
-main form button.start{
     background: green;
-}
-
-main foirm button.stop{
-    background: red;
 }
 
 main form button:hover,
@@ -120,6 +113,19 @@ main form h3{
     text-align: center;
     font-size: 120%;
     margin-bottom: 30px;
+}
+
+main form input#initials{
+    display: block;
+    width: 80%;
+    margin: 0px auto 30px auto;
+    padding: 5px;
+    text-align: center;
+    font-size: 150%;
+}
+
+main form input#initials::placeholder{
+    font-size: 50%;
 }
 
 main form label{
