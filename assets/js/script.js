@@ -112,35 +112,25 @@ let highScores = localStorage.getItem("bootcamp-quiz-scores");
 let quizForm = document.getElementById("quizblock");
 let theButton = quizForm.querySelector("button");
 let timerWindow = document.getElementById("countdown");
+let activeScore = document.getElementById("currentscore");
 let timeRemaining = 60;
 let globalTimer;
 
 
-// Grab control of the button and form
+// LUCIOWARE - Button hijacked, and now being assigned tasks
 theButton.addEventListener("click", function(event){
     event.preventDefault();
 
-    if( theButton.classList.contains("start") ){
-
-        // Disable the button first
-        theButton.style.display = "none";
-
-        // START THE QUIZ!
-        currentScore = {
-            "wrong"     : 0,
-            "correct"   : 0,
-            "timeleft"  : 0
-        };
-
-    }
-    else{
-        // Reenable the button
-        theButton.disabled = false;
-        
-        // Cancel the quiz
+    theButton.style.display = "none";
+    currentScore = {
+        "wrong"     : 0,
+        "correct"   : 0,
+        "timeleft"  : 0
     }
 
-    console.log("Button pushed!");
+
+    quizHandler(0);
+    clockManager("start");
 
   });
 
@@ -169,7 +159,7 @@ function clockManager(control){
             }
             if(timeRemaining <= 0){
                 clockManager("stop");
-                // endQuiz();
+                endOfQuiz("timelimit");
             }
         }, 1000);
     }
@@ -183,11 +173,12 @@ function clockManager(control){
 
 }
 
-// Make a question propogator
+
+// LUCIOWARE - Quiz handler populates the question area.
 function quizHandler( questionNumber ){
 
-    if( questionNumber >= 9 || timeRemaining <= 0){
-        // outOfQuestions
+    if( questionNumber > 9 || timeRemaining <= 0){
+        endOfQuiz("questions");
         return;
     }
 
@@ -223,7 +214,8 @@ function quizHandler( questionNumber ){
     answerValidation(questionNumber);
 }
 
-// Validation + Loop
+
+// LUCIOWARE - Answers are validating, and looping through the question list
 function answerValidation(questionNumber){
 
     var allAnswers = document.querySelectorAll(`input[type="checkbox"]`);
@@ -231,11 +223,13 @@ function answerValidation(questionNumber){
         allAnswers[i].addEventListener("change", function(){            
 
             if(this.value == possibleQuestions[questionNumber].correct ){
-                console.log(`Correct answer for question ${questionNumber}!`);
+                currentScore.correct++;
+                activeScore.querySelector("span").textContent = currentScore.correct;
             }
 
             else{
-                console.log(`Wrong answer for question ${questionNumber}...`);
+                currentScore.wrong++;
+                timeRemaining -= 5;
             }
 
             quizHandler( questionNumber+1 )
@@ -244,18 +238,76 @@ function answerValidation(questionNumber){
 }
 
 
-// Make an answer validator
+// Checking scores!
+function evaluateScores(){
+    console.log("TODO: Populate scoreboard");
+    var storeBoard = {
+        1 : {
+            "player"    : ""
+            "wrong"     : 0,
+            "correct"   : 0,
+            "timeleft"  : 0
+        },
+        2 : {
+            "player"    : ""
+            "wrong"     : 0,
+            "correct"   : 0,
+            "timeleft"  : 0
+        },
+        3 : {
+            "player"    : ""
+            "wrong"     : 0,
+            "correct"   : 0,
+            "timeleft"  : 0
+        },
+    }
 
-// STOP THE QUIZ! Tally the score...
+    if( highScores != null && highScores != undefined ){
+        
+        for(i=)
 
-// THE BIG ONE!
-function initialize(){
+    }
 
-    // console.log("Initialized");
-    clockManager("reset");
-    //displayScore();
+    // highScores = localStorage.getItem("bootcamp-quiz-scores");
+}
+
+
+// LUCIOWARE - STOP THE QUIZ!
+function endOfQuiz(finishtype){
+
+    // RESET THE QUIZ AREA!
+    questionArea = quizForm.querySelector(".quizcontent");
+    questionArea.textContent = "";
+    theButton.style.display = "block";
+    theButton.textContent = "Try again?"
+    timerWindow.classList.remove("alert");
+
+    var finishMessage = document.createElement("h2");
+    var contentMessage = document.createElement("h3");
+    var nameSpace = document.createElement("input"); // TODO!
+
+    if(finishtype == "timelimit"){
+        finishMessage.textContent = "Time's up!";
+        questionArea.appendChild(finishMessage);
+    }
+    if(finishtype == "questions"){
+        clearInterval(globalTimer);
+        currentScore.timeleft = timeRemaining;
+        finishMessage.textContent = "All questions completed!";
+        questionArea.appendChild(finishMessage);
+    }
+    contentMessage.textContent = "You can check your score, your remaining time, and the best scorers at the top! And you can always try again.";
+    questionArea.appendChild(contentMessage);
+
+    evaluateScores();
 
 }
 
+
 // [Shania Voice] LET'S GO, GIRLS!
+function initialize(){
+    clockManager("reset");
+    evaluateScores();
+}
+
 initialize();

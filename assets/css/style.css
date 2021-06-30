@@ -82,7 +82,7 @@ main form{
 
 main form button{
     display: block;
-    margin:0px auto 15px auto;
+    margin:0px auto 30px auto;
     padding: 5px;
     border-radius: 5px;
     color: white;
@@ -107,6 +107,19 @@ main form button:focus{
 main form p{
     font-weight: 600;
     margin-bottom: 20px;
+}
+
+main form h2{
+    text-align: center;
+    color: blue;
+    font-size: 175%;
+    margin-bottom: 20px;
+}
+
+main form h1{
+    text-align: center;
+    font-size: 120%;
+    margin-bottom: 30px;
 }
 
 main form label{
