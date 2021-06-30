@@ -102,11 +102,17 @@ let possibleQuestions = {
 
 }
 
+let currentScore = {
+    "wrong"     : 0,
+    "correct"   : 0,
+    "timeleft"  : 0
+};
+
 let highScores = localStorage.getItem("bootcamp-quiz-scores");
 let quizForm = document.getElementById("quizblock");
 let theButton = quizForm.querySelector("button");
 let timerWindow = document.getElementById("countdown");
-let quizTimer = 60;
+let timeRemaining = 60;
 let globalTimer;
 
 
@@ -117,9 +123,14 @@ theButton.addEventListener("click", function(event){
     if( theButton.classList.contains("start") ){
 
         // Disable the button first
-        theButton.disabled = true;
+        theButton.style.display = "none";
 
         // START THE QUIZ!
+        currentScore = {
+            "wrong"     : 0,
+            "correct"   : 0,
+            "timeleft"  : 0
+        };
 
     }
     else{
@@ -136,13 +147,13 @@ theButton.addEventListener("click", function(event){
 
 // LUCIOWARE - Timer Completed
 function clockManager(control){
-
-    var timeRemaining = quizTimer;
+    timeRemaining = 60;
     var theNumbers = timerWindow.querySelector("span");
 
     if(control == "reset"){
         // Reset the clock on page load
         theNumbers.textContent = timeRemaining;
+        theButton.style.display = "block";
     }
     else if(control == "start"){
         timerWindow.classList.add("active");
@@ -156,7 +167,7 @@ function clockManager(control){
                     timerWindow.classList.add("alert");
                 }
             }
-            if(timeRemaining === 0){
+            if(timeRemaining <= 0){
                 clockManager("stop");
                 // endQuiz();
             }
@@ -167,19 +178,71 @@ function clockManager(control){
         theNumbers.textContent = timeRemaining;
         timerWindow.classList.remove("active");
         timerWindow.classList.remove("alert");
+        theButton.style.display = "block";
     }
 
 }
 
-// // Make a question propogator
-// function quizHandler(){
-//     var questionBucket = possibleQuestions;
+// Make a question propogator
+function quizHandler( questionNumber ){
 
-//     while(questionBucket.length > 0){
-//         console.log( questionBucket[0] );
-//     }
+    if( questionNumber >= 9 || timeRemaining <= 0){
+        // outOfQuestions
+        return;
+    }
 
-// }
+    // Clear the area
+    var questionArea = quizForm.querySelector(".quizcontent");
+    questionArea.textContent = "";
+    questionArea.setAttribute("id","question"+questionNumber);
+
+
+    // Make the elements
+    var currentQuestion = possibleQuestions[questionNumber];
+
+    var questionBlock = document.createElement("p");
+    questionBlock.textContent = currentQuestion.question;
+    questionArea.appendChild(questionBlock);
+
+    for (i=0; i < 4; i++ ){
+
+        var checkBox = document.createElement("input");
+        checkBox.setAttribute("type", "checkbox");
+        checkBox.setAttribute("name", "answer"+i);
+        checkBox.setAttribute("id", "answer"+i);
+        checkBox.setAttribute("value", currentQuestion.answers[i]);
+        
+        var optionBlock = document.createElement("label");
+        optionBlock.setAttribute("for", "answer"+i)
+        optionBlock.textContent = currentQuestion.answers[i];
+        
+        questionArea.appendChild(checkBox);
+        questionArea.appendChild(optionBlock);
+    }
+
+    answerValidation(questionNumber);
+}
+
+// Validation + Loop
+function answerValidation(questionNumber){
+
+    var allAnswers = document.querySelectorAll(`input[type="checkbox"]`);
+    for(i=0; i < allAnswers.length; i++){
+        allAnswers[i].addEventListener("change", function(){            
+
+            if(this.value == possibleQuestions[questionNumber].correct ){
+                console.log(`Correct answer for question ${questionNumber}!`);
+            }
+
+            else{
+                console.log(`Wrong answer for question ${questionNumber}...`);
+            }
+
+            quizHandler( questionNumber+1 )
+        });
+    }
+}
+
 
 // Make an answer validator
 
@@ -188,7 +251,7 @@ function clockManager(control){
 // THE BIG ONE!
 function initialize(){
 
-    console.log("Initialized");
+    // console.log("Initialized");
     clockManager("reset");
     //displayScore();
 

@@ -110,9 +110,15 @@ main form p{
 }
 
 main form label{
-    display: block;
+    display: inline-block;
     margin: 5px 0px;
-    padding: 3px;
+    padding: 3px 10px;
+    width: calc(100% - 15px);
+}
+
+main form input['type="checkbox"']{
+    display: block;
+    width: 15px;
 }
 
 main form label:hover,
